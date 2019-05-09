@@ -6,7 +6,7 @@ class Visitante {
     estudiante = Math.floor(Math.random() * (1 - (-1))) + 0;
 }
 class Animal {
-    constructor(nombre,icon) {
+    constructor(nombre, icon) {
         this.nombre = nombre;
         this.icon = icon;
     }
@@ -18,7 +18,7 @@ class ObjetoTienda {
     constructor(nombre) {
         this.nombre = nombre
     }
-    precio = Math.floor(Math.random() * (50 - 1)) + 1;
+    precio = Math.floor(Math.random() * (20 - 1)) + 1;
 
 }
 var zoo = {
@@ -26,7 +26,7 @@ var zoo = {
     hubicacion: "alcobendas",
     aforo: 0,
     listaVistantes: [],
-    aforomax: Math.floor(Math.random() * (1000 - 1)) + 1,
+    aforomax: Math.floor(Math.random() * (500 - 1)) + 1,
     dineroAcumulado: 0,
     areas: [
         {
@@ -35,9 +35,9 @@ var zoo = {
             aforoMax: 200,
             nombre: "reptiles",
             animales: [
-                new Animal("cocodrilo","🐊"),
-                new Animal("dragon","🐉"),
-                new Animal("t-rex","🦖"),
+                new Animal("cocodrilo", "🐊"),
+                new Animal("dragon", "🐉"),
+                new Animal("t-rex", "🦖"),
             ]
         },
         {
@@ -46,9 +46,9 @@ var zoo = {
             aforoMax: 500,
             nombre: "aves",
             animales: [
-                new Animal("pigüino","🐧"),
-                new Animal("buho","🦉"),
-                new Animal("pato","🦆")
+                new Animal("pigüino", "🐧"),
+                new Animal("buho", "🦉"),
+                new Animal("pato", "🦆")
             ]
         },
         {
@@ -57,9 +57,9 @@ var zoo = {
             aforoMax: 300,
             nombre: "mamiferos",
             animales: [
-                new Animal("pedro","🐷"),
-                new Animal("vaca","🐮"),
-                new Animal("oso","🐻")
+                new Animal("pedro", "🐷"),
+                new Animal("vaca", "🐮"),
+                new Animal("oso", "🐻")
             ]
         },
         {
@@ -68,9 +68,9 @@ var zoo = {
             aforoMax: 250,
             nombre: "peces",
             animales: [
-                new Animal("pulpo","🐙"),
-                new Animal("nemo","🐠"),
-                new Animal("ballena","🐳")
+                new Animal("pulpo", "🐙"),
+                new Animal("nemo", "🐠"),
+                new Animal("ballena", "🐳")
             ]
         }
     ],
@@ -97,7 +97,7 @@ var zoo = {
         new ObjetoTienda("sudadera dinosaurio"),
     ]
 }
-function ponerGris(td1,td2,td3) {
+function ponerGris(td1, td2, td3) {
     td1.style.color = "grey";
     td2.style.color = "grey";
     td3.style.color = "grey";
@@ -111,12 +111,22 @@ function ponerGris(td1,td2,td3) {
     td2.style.backgroundColor = "transparent"
     td3.style.backgroundColor = "transparent"
 }
-function crearEvento(eventText,icon){
+function crearEvento(eventText, icon, color) {
     let tr = document.createElement("tr");
     let tdIcon = document.createElement("td");
     let tdText = document.createElement("td");
-    
+    tdIcon.innerHTML = icon;
+    tdText.innerHTML = eventText;
+    tdIcon.style.backgroundColor = color;
+    tdText.style.backgroundColor = color;
+    tr.appendChild(tdIcon);
+    tr.appendChild(tdText);
+    document.querySelector("#eventContainer>table").
+        insertBefore(tr,
+            document.querySelector("#eventContainer>table").firstChild);
+
 }
+let hora = 0;
 ejecutarCiclo();
 function anadirVisitante() {
     if (zoo.aforo < zoo.aforomax) {
@@ -141,6 +151,7 @@ function anadirVisitante() {
 }
 
 function ejecutarCiclo() {
+    hora++;
     //CALCULAR VISITANTES
     let nNuevosVisitantes = Math.floor(Math.random() * (zoo.aforomax - zoo.aforo - 0)) + 0;
     let nVisitantesSalientes = Math.floor(Math.random() * (zoo.aforo - 0)) + 0;
@@ -164,7 +175,6 @@ function ejecutarCiclo() {
             if (objeto.precio < e.cartera) {
                 e.cartera = e.cartera - objeto.precio;
                 zoo.dineroAcumulado = zoo.dineroAcumulado + objeto.precio;
-                console.log(objeto.nombre + "comprado por: " + objeto.precio)
             }
 
         }
@@ -177,9 +187,12 @@ function ejecutarCiclo() {
     pNVisitantesEntrantes = document.createElement("p");
     pDineroZoo = document.createElement("p");
 
-    pNVisitantesTotales.innerHTML = "Visitantes en el recinto: " + zoo.aforo + "/" + zoo.aforomax;
-    pNVisitantesSalientes.innerHTML = "Visitantes Salientes: " + nVisitantesSalientes;
-    pNVisitantesEntrantes.innerHTML = "Visitantes Nuevos: " + nNuevosVisitantes;
+    pNVisitantesTotales.innerHTML = "Visitantes en el recinto: " +
+        zoo.aforo + "/" + zoo.aforomax;
+    pNVisitantesSalientes.innerHTML = "Visitantes Salientes: " +
+        nVisitantesSalientes;
+    pNVisitantesEntrantes.innerHTML = "Visitantes Nuevos: " +
+        nNuevosVisitantes;
     pDineroZoo.innerHTML = "Dinero Zoo: " + zoo.dineroAcumulado + "€";
     nVisitantesContainer.appendChild(pNVisitantesTotales);
     nVisitantesContainer.appendChild(pNVisitantesEntrantes);
@@ -255,12 +268,16 @@ function ejecutarCiclo() {
                 if (e.salud < 50 && zoo.dineroAcumulado > 1000) {
                     e.salud = e.salud + 30;
                     zoo.dineroAcumulado = zoo.dineroAcumulado - 1000;
+                    crearEvento(e.icon + " " + e.nombre +
+                        " ha sido llevado al veterinario ", "🚑" + e.icon, "#03ab03");
                 }
                 // animal muerto
                 if (e.salud <= 0) {
                     e.salud = 0;
                     e.vivo = false;
                     ponerGris(tdNombre, tdSalud, tdHambre);
+                    crearEvento(e.icon + " " + e.nombre +
+                        " ha muerto por falta de salud", e.icon + "☠️", "#ff3535");
                 }
                 if (e.salud > 100) {
                     e.salud = 100;
@@ -291,26 +308,54 @@ function ejecutarCiclo() {
                 //alimentar
                 if (e.hambre > 100 && zoo.dineroAcumulado > 1000) {
                     e.hambre = 0;
-                    tdHambre.style.borderColor = "green";
+                    tdHambre.style.borderColor = "#03ab03";
+                    tdHambre.style.backgroundColor = "#03ab03";
                     zoo.dineroAcumulado = zoo.dineroAcumulado - 1000;
+                    crearEvento(e.icon + " " + e.nombre +
+                        " ha sido alimentado", e.icon + "🍗", "#03ab03");
+
                 }
                 //comer otros animales
-                if (e.hambre >= 150) {
-                    let nAnimal
-                        = Math.floor(Math.random() *
-                            (area.animales.length - 1)) + 1;
-                    while (area.animales[nAnimal].nombre == e.nombre) {
-                        nAnimal
+                if (e.vivo) {
+                    let animalesVivos = 0;
+                    area.animales.forEach((e) => {
+                        if (e.vivo == true) {
+                            animalesVivos++;
+                        }
+                    })
+                    if (e.hambre >= 150 && animalesVivos > 1) {
+                        let nAnimal
                             = Math.floor(Math.random() *
-                                (area.animales.length - 1)) + 1;
+                                (area.animales.length - 0)) + 0;
+                        let aux = area.animales[nAnimal]
+                        while (area.animales[nAnimal].nombre == e.nombre || !area.animales[nAnimal].vivo) {
+                            nAnimal
+                                = Math.floor(Math.random() *
+                                    (area.animales.length - 0)) + 0;
+                        }
+                        area.animales[nAnimal].vivo = false;
+                        e.hambre = 0;
+                        tdHambre.style.borderColor = "#03ab03";
+                        tdHambre.style.backgroundColor = "#03ab03";
+                        crearEvento(e.icon + " " + e.nombre +
+                            " se ha comido a " + area.animales[nAnimal].icon + area.animales[nAnimal].nombre, e.icon + "🍗" + area.animales[nAnimal].icon, "#ff3535");
                     }
-                    area.animales[nAnimal].vivo = false;
-                    e.hambre = 0;
+                    if (e.hambre >= 200) {
+                        e.salud = 0;
+                        e.vivo = false;
+                        ponerGris(tdNombre, tdSalud, tdHambre);
+                        crearEvento(e.icon + " " + e.nombre +
+                            " ha muerto por falta de comida", e.icon + "☠️", "#ff3535");
+                    }
                 }
             }
             tr = document.createElement("tr");
-
-            tdNombre.innerHTML =e.icon + " " + e.nombre.charAt(0).toUpperCase()  + e.nombre.slice(1);
+            // añadir elementos animales
+            if (!e.vivo) {
+                e.icon = "☠️";
+            }
+            tdNombre.innerHTML = e.icon + " " +
+                e.nombre.charAt(0).toUpperCase() + e.nombre.slice(1);
             tdHambre.innerHTML = e.hambre;
 
             tr.appendChild(tdNombre);
@@ -322,6 +367,18 @@ function ejecutarCiclo() {
         div.appendChild(title);
         div.appendChild(tabla)
         container.appendChild(div);
+
+
     })
+    //añadir hora al log
+    let trlog = document.createElement("tr");
+    let tdText = document.createElement("td");
+    tdText.innerHTML = "------ HORA: " + hora + " ------";
+    tdText.style.backgroundColor = "grey";
+    trlog.appendChild(tdText);
+    tdText.setAttribute("colspan", "2")
+    document.querySelector("#eventContainer>table").
+        insertBefore(trlog,
+            document.querySelector("#eventContainer>table").firstChild);
 }
-//setInterval('ejecutarCiclo()', 3000);
+setInterval('ejecutarCiclo()', 3000);
